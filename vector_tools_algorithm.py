@@ -35,7 +35,14 @@ from qgis.core import (QgsProcessing,
                        QgsFeatureSink,
                        QgsProcessingAlgorithm,
                        QgsProcessingParameterFeatureSource,
-                       QgsProcessingParameterFeatureSink)
+                       QgsProcessingParameterFeatureSink,
+                       QgsExpression,
+                       QgsExpressionContext,
+                       QgsFeature,
+                       QgsLineString,
+                       QgsPoint,
+                       QgsGeometry,
+                       QgsFields)
 
 
 class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
@@ -70,8 +77,8 @@ class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                self.tr('Input layer'),
-                [QgsProcessing.TypeVectorAnyGeometry]
+                self.tr('Input layer (Point)'),
+                [QgsProcessing.TypeVectorPoint]
             )
         )
 
@@ -81,7 +88,7 @@ class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT,
-                self.tr('Output layer')
+                self.tr('Output layer (LineString)')
             )
         )
 
@@ -90,35 +97,38 @@ class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
         Here is where the processing itself takes place.
         """
 
-        # Retrieve the feature source and sink. The 'dest_id' variable is used
-        # to uniquely identify the feature sink, and must be included in the
-        # dictionary returned by the processAlgorithm function.
         source = self.parameterAsSource(parameters, self.INPUT, context)
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT,
-                context, source.fields(), source.wkbType(), source.sourceCrs())
+                context, QgsFields(), 2, source.sourceCrs())
 
-        # Compute the number of steps to display within the progress bar and
-        # get features from source
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-        features = source.getFeatures()
+        total = source.featureCount() - 1
+        features = list(source.getFeatures())
 
-        for current, feature in enumerate(features):
-            # Stop the algorithm if cancel button has been clicked
+        ex = QgsExpression('$x')
+        ey = QgsExpression('$y')
+        context_source_layer = QgsExpressionContext()
+        context_source_layer.appendScope(source.createExpressionContextScope())
+        
+        context_source_layer.setFeature(features[0])
+        x1 = ex.evaluate(context_source_layer)
+        y1 = ey.evaluate(context_source_layer)
+
+        for index in range(total):
             if feedback.isCanceled():
                 break
 
-            # Add a feature in the sink
-            sink.addFeature(feature, QgsFeatureSink.FastInsert)
+            context_source_layer.setFeature(features[index + 1])
+            x2 = ex.evaluate(context_source_layer)
+            y2 = ey.evaluate(context_source_layer)
 
-            # Update the progress bar
-            feedback.setProgress(int(current * total))
+            f = QgsFeature()
+            line = QgsLineString(QgsPoint(x1, y1), QgsPoint(x2, y2))
+            x1, y1 = x2, y2
+            f.setGeometry(QgsGeometry.fromPolyline(line))
+            sink.addFeature(f, QgsFeatureSink.FastInsert)
 
-        # Return the results of the algorithm. In this case our only result is
-        # the feature sink which contains the processed features, but some
-        # algorithms may return multiple feature sinks, calculated numeric
-        # statistics, etc. These should all be included in the returned
-        # dictionary, with keys matching the feature corresponding parameter
-        # or output names.
+            feedback.setProgress(int((index + 1) / total * 100))
+
         return {self.OUTPUT: dest_id}
 
     def name(self):

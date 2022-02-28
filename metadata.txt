@@ -22,7 +22,7 @@ about=Some QGIS vector processing algorithms.
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=2022/02/28 v0.1 Add CreateLinksFromAPointLayer function
 
 # Tags are comma separated with spaces allowed
 tags=python, processing, point, line, polygon
