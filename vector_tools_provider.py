@@ -53,9 +53,8 @@ class VectorToolsProvider(QgsProcessingProvider):
         """
         Loads all algorithms belonging to this provider.
         """
-        self.addAlgorithm(CreateLinksFromAPointLayer())
         # add additional algorithms here
-        # self.addAlgorithm(MyOtherAlgorithm())
+        self.addAlgorithm(CreateLinksFromAPointLayer())
 
     def id(self):
         """
@@ -72,7 +71,7 @@ class VectorToolsProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('VectorTools')
+        return self.tr(self.id())
 
     def icon(self):
         """

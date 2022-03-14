@@ -131,6 +131,14 @@ class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
 
         return {self.OUTPUT: dest_id}
 
+    def shortHelpString(self):
+        """
+        Returns a localised short helper string for the algorithm. This string
+        should provide a basic description about what the algorithm does and the
+        parameters and outputs associated with it..
+        """
+        return self.tr("Input layer (Point) 输入一个 Point/MultiPoint 图层\n\nOutput layer (LineString) 输出一个 LineString 图层")
+
     def name(self):
         """
         Returns the algorithm name, used for identifying the algorithm. This
@@ -148,22 +156,22 @@ class CreateLinksFromAPointLayer(QgsProcessingAlgorithm):
         """
         return self.tr(self.name())
 
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr(self.groupId())
+    # def group(self):
+    #     """
+    #     Returns the name of the group this algorithm belongs to. This string
+    #     should be localised.
+    #     """
+    #     return self.tr(self.groupId())
 
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'default'
+    # def groupId(self):
+    #     """
+    #     Returns the unique ID of the group this algorithm belongs to. This
+    #     string should be fixed for the algorithm, and must not be localised.
+    #     The group id should be unique within each provider. Group id should
+    #     contain lowercase alphanumeric characters only and no spaces or other
+    #     formatting characters.
+    #     """
+    #     return 'default'
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
