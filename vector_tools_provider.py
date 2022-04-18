@@ -6,6 +6,7 @@ __edit_date__ = '2022-04-18'
 
 from qgis.core import QgsProcessingProvider
 from .LinksFromTwoConsecutivePointPairs import LinksFromTwoConsecutivePointPairs
+from .LinksFromEachTwoPointPairs import LinksFromEachTwoPointPairs
 
 class VectorToolsProvider(QgsProcessingProvider):
 
@@ -28,6 +29,7 @@ class VectorToolsProvider(QgsProcessingProvider):
         """
         # add additional algorithms here
         self.addAlgorithm(LinksFromTwoConsecutivePointPairs())
+        self.addAlgorithm(LinksFromEachTwoPointPairs())
 
     def id(self):
         """
