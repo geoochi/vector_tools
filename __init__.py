@@ -23,8 +23,7 @@
 """
 
 __author__ = 'szchixy'
-__date__ = '2022-02-28'
-__copyright__ = '(C) 2022 by szchixy'
+__create_date__ = '2022-02-28'
 
 
 # noinspection PyPep8Naming
